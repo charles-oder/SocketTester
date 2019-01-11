@@ -3,6 +3,7 @@ package us.oder.websockettestclient
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.control.TextField
 import tornadofx.*
+import java.util.prefs.Preferences
 
 interface ConnectionViewListener {
     fun onConnectClick(url: String)
@@ -11,9 +12,12 @@ interface ConnectionViewListener {
 
 class ConnectionView(val listener: ConnectionViewListener): View() {
 
+    private val urlKey = "url-key"
+    private val preferences = Preferences.userNodeForPackage(ConnectionView::class.java)
+
     private val connectionStatusObservable = SimpleStringProperty("Disconnected")
     private val buttonDisplayString = SimpleStringProperty("Connect")
-    private val urlObservable = SimpleStringProperty()
+    private val urlObservable = SimpleStringProperty(preferences.get(urlKey, "wss://"))
     private var connected: Boolean = false
     private var urlField: TextField? = null
 
@@ -43,6 +47,7 @@ class ConnectionView(val listener: ConnectionViewListener): View() {
                     listener.onDisconnectClick()
                 } else {
                     println("Connecting to ${url}")
+                    preferences.put(urlKey, url)
                     listener.onConnectClick(url)
                 }
             }
@@ -57,7 +62,7 @@ class ConnectionView(val listener: ConnectionViewListener): View() {
         var buttonText = ""
         if (connected) {
             buttonText += "Disconnect"
-            messageString += "Connected: ${urlObservable.value}"
+            messageString += "Connected: ${url}"
         } else {
             buttonText += "Connect"
             messageString += "Disconnected"
