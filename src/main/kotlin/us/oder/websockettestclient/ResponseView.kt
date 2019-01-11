@@ -31,7 +31,7 @@ class ResponseView: View() {
 
     override val root = vbox {
         textarea {
-            prefHeight = 200.0
+            prefHeight = 1000.0
         }.bind(responseMessageObservable)
         hbox {
             this += firstButton
